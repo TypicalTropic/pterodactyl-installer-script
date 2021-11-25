@@ -2,35 +2,7 @@
 
 set -e
 
-#############################################################################
-#                                                                           #
-# Project 'pterodactyl-installer' for wings                                 #
-#                                                                           #
-# Copyright (C) 2018 - 2021, Vilhelm Prytz, <vilhelm@prytznet.se>           #
-#                                                                           #
-#   This program is free software: you can redistribute it and/or modify    #
-#   it under the terms of the GNU General Public License as published by    #
-#   the Free Software Foundation, either version 3 of the License, or       #
-#   (at your option) any later version.                                     #
-#                                                                           #
-#   This program is distributed in the hope that it will be useful,         #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of          #
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           #
-#   GNU General Public License for more details.                            #
-#                                                                           #
-#   You should have received a copy of the GNU General Public License       #
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.  #
-#                                                                           #
-# https://github.com/vilhelmprytz/pterodactyl-installer/blob/master/LICENSE #
-#                                                                           #
-# This script is not associated with the official Pterodactyl Project.      #
-# https://github.com/vilhelmprytz/pterodactyl-installer                     #
-#                                                                           #
-#############################################################################
-
 # versioning
-GITHUB_SOURCE="master"
-SCRIPT_RELEASE="canary"
 
 #################################
 ######## General checks #########
@@ -45,7 +17,7 @@ fi
 # check for curl
 if ! [ -x "$(command -v curl)" ]; then
   echo "* curl is required in order for this script to work."
-  echo "* install using apt (Debian and derivatives) or yum/dnf (CentOS)"
+  echo "* install using apt (Debian and derivatives)"
   exit 1
 fi
 
@@ -55,7 +27,7 @@ fi
 
 # download URLs
 WINGS_DL_BASE_URL="https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_"
-GITHUB_BASE_URL="https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/$GITHUB_SOURCE"
+GITHUB_BASE_URL="https://github.com/TypicalTropic/pterodactyl-installer-script"
 
 COLOR_RED='\033[0;31m'
 COLOR_NC='\033[0m'
@@ -64,7 +36,7 @@ INSTALL_MARIADB=false
 
 # firewall
 CONFIGURE_FIREWALL=false
-CONFIGURE_UFW=false
+
 CONFIGURE_FIREWALL_CMD=false
 
 # SSL (Let's Encrypt)
@@ -179,7 +151,7 @@ detect_distro() {
     OS=$(lsb_release -si | awk '{print tolower($0)}')
     OS_VER=$(lsb_release -sr)
   elif [ -f /etc/lsb-release ]; then
-    # For some versions of Debian/Ubuntu without lsb_release command
+    # For some versions of Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$(echo "$DISTRIB_ID" | awk '{print tolower($0)}')
     OS_VER=$DISTRIB_RELEASE
@@ -191,10 +163,7 @@ detect_distro() {
     # Older SuSE/etc.
     OS="SuSE"
     OS_VER="?"
-  elif [ -f /etc/redhat-release ]; then
-    # Older Red Hat, CentOS, etc.
-    OS="Red Hat/CentOS"
-    OS_VER="?"
+ 
   else
     # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
     OS=$(uname -s)
@@ -238,15 +207,7 @@ check_os_comp() {
     [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
     [ "$OS_VER_MAJOR" == "20" ] && SUPPORTED=true
     ;;
-  debian)
-    [ "$OS_VER_MAJOR" == "9" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "10" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "11" ] && SUPPORTED=true
-    ;;
-  centos)
-    [ "$OS_VER_MAJOR" == "7" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "8" ] && SUPPORTED=true
-    ;;
+
   *)
     SUPPORTED=false
     ;;
@@ -263,7 +224,7 @@ check_os_comp() {
 
   # check virtualization
   echo -e "* Installing virt-what..."
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+  if [ "$OS" == "ubuntu" ]; then
     # silence dpkg output
     export DEBIAN_FRONTEND=noninteractive
 
@@ -273,17 +234,7 @@ check_os_comp() {
 
     # unsilence
     unset DEBIAN_FRONTEND
-  elif [ "$OS" == "centos" ]; then
-    if [ "$OS_VER_MAJOR" == "7" ]; then
-      yum -q -y update
-
-      # install virt-what
-      yum -q -y install virt-what
-    elif [ "$OS_VER_MAJOR" == "8" ]; then
-      dnf -y -q update
-
-      # install virt-what
-      dnf install -y -q virt-what
+  
     fi
   else
     print_error "Invalid OS."
@@ -336,7 +287,7 @@ enable_docker() {
 
 install_docker() {
   echo "* Installing docker .."
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+  if [ "$OS" == "ubuntu" ]; then
     # Install dependencies
     apt-get -y install \
       apt-transport-https \
@@ -363,30 +314,6 @@ install_docker() {
     # Make sure docker is enabled
     enable_docker
 
-  elif [ "$OS" == "centos" ]; then
-    if [ "$OS_VER_MAJOR" == "7" ]; then
-      # Install dependencies for Docker
-      yum install -y yum-utils device-mapper-persistent-data lvm2
-
-      # Add repo to yum
-      yum-config-manager \
-        --add-repo \
-        https://download.docker.com/linux/centos/docker-ce.repo
-
-      # Install Docker
-      yum install -y docker-ce docker-ce-cli containerd.io
-    elif [ "$OS_VER_MAJOR" == "8" ]; then
-      # Install dependencies for Docker
-      dnf install -y dnf-utils device-mapper-persistent-data lvm2
-
-      # Add repo to dnf
-      dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
-
-      # Install Docker
-      dnf install -y docker-ce docker-ce-cli containerd.io --nobest
-    fi
-
-    enable_docker
   fi
 
   echo "* Docker has now been installed."
@@ -415,23 +342,11 @@ install_mariadb() {
   MARIADB_URL="https://downloads.mariadb.com/MariaDB/mariadb_repo_setup"
 
   case "$OS" in
-  debian)
-    if [ "$ARCH" == "aarch64" ]; then
-      print_warning "MariaDB doesn't support Debian on arm64"
-      return
-    fi
-    [ "$OS_VER_MAJOR" == "9" ] && curl -sS $MARIADB_URL | sudo bash
-    apt install -y mariadb-server
-    ;;
   ubuntu)
     [ "$OS_VER_MAJOR" == "18" ] && curl -sS $MARIADB_URL | sudo bash
     apt install -y mariadb-server
     ;;
-  centos)
-    [ "$OS_VER_MAJOR" == "7" ] && curl -sS $MARIADB_URL | bash
-    [ "$OS_VER_MAJOR" == "7" ] && yum -y install mariadb-server
-    [ "$OS_VER_MAJOR" == "8" ] && dnf install -y mariadb mariadb-server
-    ;;
+
   esac
 
   systemctl enable mariadb
@@ -464,10 +379,6 @@ configure_mysql() {
   debian | ubuntu)
     sed -ne 's/^bind-address            = 127.0.0.1$/bind-address=0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
     ;;
-  centos)
-    sed -ne 's/^#bind-address=0.0.0.0$/bind-address=0.0.0.0/' /etc/my.cnf.d/mariadb-server.cnf
-    ;;
-  esac
 
   echo "* MySQL configured!"
 }
@@ -477,7 +388,7 @@ configure_mysql() {
 #################################
 
 ask_letsencrypt() {
-  if [ "$CONFIGURE_UFW" == false ] && [ "$CONFIGURE_FIREWALL_CMD" == false ]; then
+  if [ "$CONFIGURE_FIREWALL_CMD" == false ]; then
     print_warning "Let's Encrypt requires port 80/443 to be opened! You have opted out of the automatic firewall configuration; use this at your own risk (if port 80/443 is closed, the script will fail)!"
   fi
 
@@ -491,35 +402,16 @@ ask_letsencrypt() {
   fi
 }
 
-firewall_ufw() {
-  apt install ufw -y
-
-  echo -e "\n* Enabling Uncomplicated Firewall (UFW)"
-  echo "* Opening port 22 (SSH), 8080 (Daemon Port), 2022 (Daemon SFTP Port)"
-
-  # pointing to /dev/null silences the command output
-  ufw allow ssh >/dev/null
-  ufw allow 8080 >/dev/null
-  ufw allow 2022 >/dev/null
-
-  [ "$CONFIGURE_LETSENCRYPT" == true ] && ufw allow http >/dev/null
-  [ "$CONFIGURE_LETSENCRYPT" == true ] && ufw allow https >/dev/null
-
-  ufw --force enable
-  ufw --force reload
-  ufw status numbered | sed '/v6/d'
-}
 
 firewall_firewalld() {
   echo -e "\n* Enabling firewall_cmd (firewalld)"
   echo "* Opening port 22 (SSH), 8080 (Daemon Port), 2022 (Daemon SFTP Port)"
 
   # Install
-  [ "$OS_VER_MAJOR" == "7" ] && yum -y -q install firewalld >/dev/null
-  [ "$OS_VER_MAJOR" == "8" ] && dnf -y -q install firewalld >/dev/null
-
+  [ "$OS" == "ubuntu" ] && sudo apt -y install firewalld 
+  
   # Enable
-  systemctl --now enable firewalld >/dev/null # Enable and start
+  systemctl --now enable firewalld  # Enable and start
 
   # Configure
   firewall-cmd --add-service=ssh --permanent -q                                           # Port 22
@@ -544,15 +436,7 @@ letsencrypt() {
   debian | ubuntu)
     apt-get -y install certbot python3-certbot-nginx
     ;;
-  centos)
-    [ "$OS_VER_MAJOR" == "7" ] && yum -y -q install epel-release
-    [ "$OS_VER_MAJOR" == "7" ] && yum -y -q install certbot python-certbot-nginx
-
-    [ "$OS_VER_MAJOR" == "8" ] && dnf -y -q install epel-release
-    [ "$OS_VER_MAJOR" == "8" ] && dnf -y -q install certbot python3-certbot-nginx
-    ;;
-  esac
-
+  
   # If user has nginx
   systemctl stop nginx || true
 
@@ -573,10 +457,7 @@ letsencrypt() {
 
 perform_install() {
   echo "* Installing pterodactyl wings.."
-  [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ] && apt_update
-  [ "$OS" == "centos" ] && [ "$OS_VER_MAJOR" == "7" ] && yum_update
-  [ "$OS" == "centos" ] && [ "$OS_VER_MAJOR" == "8" ] && dnf_update
-  [ "$CONFIGURE_UFW" == true ] && firewall_ufw
+  [ "$OS" == "ubuntu" ] && apt_update
   [ "$CONFIGURE_FIREWALL_CMD" == true ] && firewall_firewalld
   install_docker
   ptdl_dl
@@ -605,13 +486,6 @@ main() {
   detect_distro
 
   print_brake 70
-  echo "* Pterodactyl Wings installation script @ $SCRIPT_RELEASE"
-  echo "*"
-  echo "* Copyright (C) 2018 - 2021, Vilhelm Prytz, <vilhelm@prytznet.se>"
-  echo "* https://github.com/vilhelmprytz/pterodactyl-installer"
-  echo "*"
-  echo "* This script is not associated with the official Pterodactyl Project."
-  echo "*"
   echo "* Running $OS version $OS_VER."
   echo "* Latest pterodactyl/wings is $WINGS_VERSION"
   print_brake 70
@@ -630,6 +504,9 @@ main() {
   echo -e "* ${COLOR_RED}Note${COLOR_NC}: this script will not enable swap (for docker)."
   print_brake 42
 
+
+  #Configures Database
+
   ask_database_user
 
   if [ "$CONFIGURE_DBHOST" == true ]; then
@@ -647,20 +524,9 @@ main() {
     password_input MYSQL_DBHOST_PASSWORD "Database host password: " "Password cannot be empty"
   fi
 
-  # UFW is available for Ubuntu/Debian
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
-    echo -e -n "* Do you want to automatically configure UFW (firewall)? (y/N): "
-    read -r CONFIRM_UFW
-
-    if [[ "$CONFIRM_UFW" =~ [Yy] ]]; then
-      CONFIGURE_UFW=true
-      CONFIGURE_FIREWALL=true
-    fi
-  fi
-
-  # Firewall-cmd is available for CentOS
-  if [ "$OS" == "centos" ]; then
-    echo -e -n "* Do you want to automatically configure firewall-cmd (firewall)? (y/N): "
+  # Firewalld will be used for Ubuntu
+  if [ "$OS" == "ubuntu" ]; then
+    echo -e -n "* Do you want to automatically configure Firewalld (firewall)? (y/N): "
     read -r CONFIRM_FIREWALL_CMD
 
     if [[ "$CONFIRM_FIREWALL_CMD" =~ [Yy] ]]; then
@@ -668,6 +534,7 @@ main() {
       CONFIGURE_FIREWALL=true
     fi
   fi
+
 
   ask_letsencrypt
 
