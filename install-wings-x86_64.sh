@@ -200,7 +200,7 @@ check_os_comp() {
     exit 1
     ;;
   esac
-
+}
   case "$OS" in
   ubuntu)
     [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
@@ -233,8 +233,7 @@ check_os_comp() {
 
     # unsilence
     unset DEBIAN_FRONTEND
-  
-    fi
+
   else
     print_error "Invalid OS."
     exit 1
@@ -250,7 +249,7 @@ check_os_comp() {
     if [[ ! "$CONFIRM_PROCEED" =~ [Yy] ]]; then
       print_error "Installation aborted!"
       exit 1
-    fi
+      fi
     ;;
   *)
     [ "$virt_serv" != "" ] && print_warning "Virtualization: $virt_serv detected."
@@ -261,7 +260,6 @@ check_os_comp() {
     print_error "Unsupported kernel detected."
     exit 1
   fi
-}
 
 ############################
 ## INSTALLATION FUNCTIONS ##
@@ -269,14 +267,6 @@ check_os_comp() {
 
 apt_update() {
   apt update -q -y && apt upgrade -y
-}
-
-yum_update() {
-  yum -y update
-}
-
-dnf_update() {
-  dnf -y upgrade
 }
 
 enable_docker() {
@@ -377,7 +367,9 @@ configure_mysql() {
   case "$OS" in
   debian | ubuntu)
     sed -ne 's/^bind-address            = 127.0.0.1$/bind-address=0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
-    ;;
+  ;;
+
+  esac
 
   echo "* MySQL configured!"
 }
@@ -435,6 +427,7 @@ letsencrypt() {
   debian | ubuntu)
     apt-get -y install certbot python3-certbot-nginx
     ;;
+  esac
   
   # If user has nginx
   systemctl stop nginx || true
