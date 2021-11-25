@@ -42,9 +42,9 @@ done=false
 
 output
 
-PANEL_LATEST="$GITHUB_BASE_URL/install-panel.sh"
+PANEL_LATEST ="$GITHUB_BASE_URL/install-panel.sh"
 
-WINGS_LATEST__x86_64="$GITHUB_BASE_URL/install-wings.sh"
+WINGS_LATEST_x86_64 ="$GITHUB_BASE_URL/install-wings.sh"
 
 WINGS_ARM="$GITHUB_BASE_URL/install-wings-arm.sh"
 
