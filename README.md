@@ -2,7 +2,7 @@
 Installing Pterodactyl in just a few minutes! <br />
 Please note this script is meant to be used on fresh installations only. You must run it as root. <br />
 <br />
-`curl -Ls https://gitlab.com/TypicalTropic/pterodactyl-arm/-/raw/main/install.sh?inline=false | grep -wo "https.*install.sh" | wget -qi -` <br />
+
 <br /> 
 `bash install.sh` <br />
 <br />
