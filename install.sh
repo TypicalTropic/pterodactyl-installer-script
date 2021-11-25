@@ -62,7 +62,7 @@ while [ "$done" == false ]; do
     "$PANEL_LATEST"
     "$WINGS_LATEST_x86_64"
     "$WINGS_ARM"
-    "$PANEL_LATEST;$WINGS_LATEST"
+    "$PANEL_LATEST;$WINGS_LATEST_x86_64"
     "$PANEL_LATEST;$WINGS_ARM"
 
   )
