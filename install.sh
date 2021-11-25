@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-
 GITHUB_BASE_URL="https://github.com/TypicalTropic/pterodactyl-installer-script"
 
 LOG_PATH="/var/log/pterodactyl-installer.log"
