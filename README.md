@@ -6,10 +6,8 @@ Please note this script is meant to be used on fresh installations only. You mus
 <br /> 
 `bash install.sh` <br />
 <br />
-Visit my Matrix group: https://matrix.to/#/#tommytran732:matrix.org
-<br />
 # Supported Operating System
-Note: This list will soon change. The project will focus on supporting more distributions (openSUSE Tumbleweed/Leap, other RHEL derivatives, etc). Support for older versions for these distributions will be dropped.
+
 
 | Operating System  | Version  | Supported            | Recommended        | Notes                                |
 | ----------------- | -------- | -------------------- | ------------------ | ------------------------------------ |
