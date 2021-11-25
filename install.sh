@@ -2,7 +2,7 @@
 
 set -e
 
-GITHUB_BASE_URL="https://raw.githubusercontent.com/TypicalTropic/pterodactyl-installer-script/blob/main/"
+GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script/"
 
 LOG_PATH="/var/log/pterodactyl-installer.log"
 
