@@ -2,32 +2,6 @@
 
 set -e
 
-#############################################################################
-#                                                                           #
-# Project 'pterodactyl-installer' for panel                                 #
-#                                                                           #
-# Copyright (C) 2018 - 2021, Vilhelm Prytz, <vilhelm@prytznet.se>           #
-#                                                                           #
-#   This program is free software: you can redistribute it and/or modify    #
-#   it under the terms of the GNU General Public License as published by    #
-#   the Free Software Foundation, either version 3 of the License, or       #
-#   (at your option) any later version.                                     #
-#                                                                           #
-#   This program is distributed in the hope that it will be useful,         #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of          #
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           #
-#   GNU General Public License for more details.                            #
-#                                                                           #
-#   You should have received a copy of the GNU General Public License       #
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.  #
-#                                                                           #
-# https://github.com/vilhelmprytz/pterodactyl-installer/blob/master/LICENSE #
-#                                                                           #
-# This script is not associated with the official Pterodactyl Project.      #
-# https://github.com/vilhelmprytz/pterodactyl-installer                     #
-#                                                                           #
-#############################################################################
-
 ######## General checks #########
 
 # exit with error status code if user is not root
@@ -44,10 +18,6 @@ if ! [ -x "$(command -v curl)" ]; then
 fi
 
 ########## Variables ############
-
-# versioning
-GITHUB_SOURCE="master"
-SCRIPT_RELEASE="canary"
 
 FQDN=""
 
@@ -72,10 +42,7 @@ CONFIGURE_LETSENCRYPT=false
 
 # download URLs
 PANEL_DL_URL="https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz"
-GITHUB_BASE_URL="https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/$GITHUB_SOURCE"
-
-# ufw firewall
-CONFIGURE_UFW=false
+GITHUB_BASE_URL=""
 
 # firewall_cmd
 CONFIGURE_FIREWALL_CMD=false
@@ -209,7 +176,7 @@ password_input() {
 }
 
 ask_letsencrypt() {
-  if [ "$CONFIGURE_UFW" == false ] && [ "$CONFIGURE_FIREWALL_CMD" == false ]; then
+  if [ "$CONFIGURE_FIREWALL_CMD" == false ]; then
     print_warning "Let's Encrypt requires port 80/443 to be opened! You have opted out of the automatic firewall configuration; use this at your own risk (if port 80/443 is closed, the script will fail)!"
   fi
 
@@ -238,16 +205,7 @@ ask_assume_ssl() {
 ask_firewall() {
   case "$OS" in
   ubuntu | debian)
-    echo -e -n "* Do you want to automatically configure UFW (firewall)? (y/N): "
-    read -r CONFIRM_UFW
-
-    if [[ "$CONFIRM_UFW" =~ [Yy] ]]; then
-      CONFIGURE_UFW=true
-      CONFIGURE_FIREWALL=true
-    fi
-    ;;
-  centos)
-    echo -e -n "* Do you want to automatically configure firewall-cmd (firewall)? (y/N): "
+    echo -e -n "* Do you want to automatically configure firewall-cmd (firewalld)? (y/N): "
     read -r CONFIRM_FIREWALL_CMD
 
     if [[ "$CONFIRM_FIREWALL_CMD" =~ [Yy] ]]; then
@@ -261,16 +219,7 @@ ask_firewall() {
 ####### OS check funtions #######
 
 detect_distro() {
-  if [ -f /etc/os-release ]; then
-    # freedesktop.org and systemd
-    . /etc/os-release
-    OS=$(echo "$ID" | awk '{print tolower($0)}')
-    OS_VER=$VERSION_ID
-  elif type lsb_release >/dev/null 2>&1; then
-    # linuxbase.org
-    OS=$(lsb_release -si | awk '{print tolower($0)}')
-    OS_VER=$(lsb_release -sr)
-  elif [ -f /etc/lsb-release ]; then
+  if [ -f /etc/lsb-release ]; then
     # For some versions of Debian/Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$(echo "$DISTRIB_ID" | awk '{print tolower($0)}')
@@ -279,18 +228,6 @@ detect_distro() {
     # Older Debian/Ubuntu/etc.
     OS="debian"
     OS_VER=$(cat /etc/debian_version)
-  elif [ -f /etc/SuSe-release ]; then
-    # Older SuSE/etc.
-    OS="SuSE"
-    OS_VER="?"
-  elif [ -f /etc/redhat-release ]; then
-    # Older Red Hat, CentOS, etc.
-    OS="Red Hat/CentOS"
-    OS_VER="?"
-  else
-    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-    OS=$(uname -s)
-    OS_VER=$(uname -r)
   fi
 
   OS=$(echo "$OS" | awk '{print tolower($0)}')
@@ -301,7 +238,7 @@ check_os_comp() {
   CPU_ARCHITECTURE=$(uname -m)
   if [ "${CPU_ARCHITECTURE}" != "x86_64" ]; then # check the architecture
     print_warning "Detected CPU architecture $CPU_ARCHITECTURE"
-    print_warning "Using any other architecture than 64 bit (x86_64) will cause problems."
+    print_warning "Using any other architecture than 64 bit (x86_64) May cause problems."
 
     echo -e -n "* Are you sure you want to proceed? (y/N):"
     read -r choice
@@ -317,17 +254,6 @@ check_os_comp() {
     PHP_SOCKET="/run/php/php8.0-fpm.sock"
     [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
     [ "$OS_VER_MAJOR" == "20" ] && SUPPORTED=true
-    ;;
-  debian)
-    PHP_SOCKET="/run/php/php8.0-fpm.sock"
-    [ "$OS_VER_MAJOR" == "9" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "10" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "11" ] && SUPPORTED=true
-    ;;
-  centos)
-    PHP_SOCKET="/var/run/php-fpm/pterodactyl.sock"
-    [ "$OS_VER_MAJOR" == "7" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "8" ] && SUPPORTED=true
     ;;
   *)
     SUPPORTED=false
@@ -373,34 +299,6 @@ ptdl_dl() {
 
 # Create a databse with user
 create_database() {
-  if [ "$OS" == "centos" ]; then
-    # secure MariaDB
-    echo "* MariaDB secure installation. The following are safe defaults."
-    echo "* Set root password? [Y/n] Y"
-    echo "* Remove anonymous users? [Y/n] Y"
-    echo "* Disallow root login remotely? [Y/n] Y"
-    echo "* Remove test database and access to it? [Y/n] Y"
-    echo "* Reload privilege tables now? [Y/n] Y"
-    echo "*"
-
-    [ "$OS_VER_MAJOR" == "7" ] && mariadb-secure-installation
-    [ "$OS_VER_MAJOR" == "8" ] && mysql_secure_installation
-
-    echo "* The script should have asked you to set the MySQL root password earlier (not to be confused with the pterodactyl database user password)"
-    echo "* MySQL will now ask you to enter the password before each command."
-
-    echo "* Create MySQL user."
-    mysql -u root -p -e "CREATE USER '${MYSQL_USER}'@'127.0.0.1' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-
-    echo "* Create database."
-    mysql -u root -p -e "CREATE DATABASE ${MYSQL_DB};"
-
-    echo "* Grant privileges."
-    mysql -u root -p -e "GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'127.0.0.1' WITH GRANT OPTION;"
-
-    echo "* Flush privileges."
-    mysql -u root -p -e "FLUSH PRIVILEGES;"
-  else
     echo "* Performing MySQL queries.."
 
     echo "* Creating MySQL user.."
@@ -416,7 +314,6 @@ create_database() {
     mysql -u root -e "FLUSH PRIVILEGES;"
 
     echo "* MySQL database created & configured!"
-  fi
 }
 
 # Configure environment
@@ -729,32 +626,17 @@ centos_php() {
   systemctl start php-fpm
 }
 
-firewall_ufw() {
-  apt install -y ufw
-
-  echo -e "\n* Enabling Uncomplicated Firewall (UFW)"
-  echo "* Opening port 22 (SSH), 80 (HTTP) and 443 (HTTPS)"
-
-  # pointing to /dev/null silences the command output
-  ufw allow ssh >/dev/null
-  ufw allow http >/dev/null
-  ufw allow https >/dev/null
-
-  ufw --force enable
-  ufw --force reload
-  ufw status numbered | sed '/v6/d'
-}
 
 firewall_firewalld() {
   echo -e "\n* Enabling firewall_cmd (firewalld)"
   echo "* Opening port 22 (SSH), 80 (HTTP) and 443 (HTTPS)"
 
   # Install
-  [ "$OS_VER_MAJOR" == "7" ] && yum -y -q install firewalld >/dev/null
-  [ "$OS_VER_MAJOR" == "8" ] && dnf -y -q install firewalld >/dev/null
+  [ "$OS_VER_MAJOR" == "18" ] && apt install -y firewalld 
+  [ "$OS_VER_MAJOR" == "20" ] && apt install -y firewalld 
 
   # Enable
-  systemctl --now enable firewalld >/dev/null # Enable and start
+  systemctl --now enable firewalld # Enable and start
 
   # Configure
   firewall-cmd --add-service=http --permanent -q  # Port 80
@@ -773,10 +655,6 @@ letsencrypt() {
   case "$OS" in
   debian | ubuntu)
     apt-get -y install certbot python3-certbot-nginx
-    ;;
-  centos)
-    [ "$OS_VER_MAJOR" == "7" ] && yum -y -q install certbot python-certbot-nginx
-    [ "$OS_VER_MAJOR" == "8" ] && dnf -y -q install certbot python3-certbot-nginx
     ;;
   esac
 
@@ -811,37 +689,21 @@ configure_nginx() {
     DL_FILE="nginx.conf"
   fi
 
-  if [ "$OS" == "centos" ]; then
-    # remove default config
-    rm -rf /etc/nginx/conf.d/default
+  # remove default config
+  rm -rf /etc/nginx/sites-enabled/default
 
-    # download new config
-    curl -o /etc/nginx/conf.d/pterodactyl.conf $GITHUB_BASE_URL/configs/$DL_FILE
+  # download new config
+  curl -o /etc/nginx/sites-available/pterodactyl.conf $GITHUB_BASE_URL/configs/$DL_FILE
 
-    # replace all <domain> places with the correct domain
-    sed -i -e "s@<domain>@${FQDN}@g" /etc/nginx/conf.d/pterodactyl.conf
+  # replace all <domain> places with the correct domain
+  sed -i -e "s@<domain>@${FQDN}@g" /etc/nginx/sites-available/pterodactyl.conf
 
-    # replace all <php_socket> places with correct socket "path"
-    sed -i -e "s@<php_socket>@${PHP_SOCKET}@g" /etc/nginx/conf.d/pterodactyl.conf
-  else
-    # remove default config
-    rm -rf /etc/nginx/sites-enabled/default
+  # replace all <php_socket> places with correct socket "path"
+  sed -i -e "s@<php_socket>@${PHP_SOCKET}@g" /etc/nginx/sites-available/pterodactyl.conf
 
-    # download new config
-    curl -o /etc/nginx/sites-available/pterodactyl.conf $GITHUB_BASE_URL/configs/$DL_FILE
+  # enable pterodactyl
+  ln -sf /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
 
-    # replace all <domain> places with the correct domain
-    sed -i -e "s@<domain>@${FQDN}@g" /etc/nginx/sites-available/pterodactyl.conf
-
-    # replace all <php_socket> places with correct socket "path"
-    sed -i -e "s@<php_socket>@${PHP_SOCKET}@g" /etc/nginx/sites-available/pterodactyl.conf
-
-    # on debian 9, TLS v1.3 is not supported (see #76)
-    [ "$OS" == "debian" ] && [ "$OS_VER_MAJOR" == "9" ] && sed -i 's/ TLSv1.3//' /etc/nginx/sites-available/pterodactyl.conf
-
-    # enable pterodactyl
-    ln -sf /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
-  fi
 
   if [ "$ASSUME_SSL" == false ] && [ "$CONFIGURE_LETSENCRYPT" == false ]; then
     systemctl restart nginx
@@ -859,38 +721,15 @@ perform_install() {
   debian | ubuntu)
     apt_update
 
-    [ "$CONFIGURE_UFW" == true ] && firewall_ufw
+    [ "$CONFIGURE_FIREWALL_CMD" == true ] && firewall_firewalld
 
     if [ "$OS" == "ubuntu" ]; then
       [ "$OS_VER_MAJOR" == "20" ] && ubuntu20_dep
       [ "$OS_VER_MAJOR" == "18" ] && ubuntu18_dep
-    elif [ "$OS" == "debian" ]; then
-      [ "$OS_VER_MAJOR" == "9" ] && debian_stretch_dep
-      [ "$OS_VER_MAJOR" == "10" ] && debian_buster_dep
-      [ "$OS_VER_MAJOR" == "11" ] && debian_dep
     fi
-    ;;
-
-  centos)
-    [ "$OS_VER_MAJOR" == "7" ] && yum_update
-    [ "$OS_VER_MAJOR" == "8" ] && dnf_update
-
-    [ "$CONFIGURE_FIREWALL_CMD" == true ] && firewall_firewalld
-
-    [ "$OS_VER_MAJOR" == "7" ] && centos7_dep
-    [ "$OS_VER_MAJOR" == "8" ] && centos8_dep
     ;;
   esac
 
-  [ "$OS" == "centos" ] && centos_php
-  install_composer
-  ptdl_dl
-  create_database
-  configure
-  set_folder_permissions
-  insert_cronjob
-  install_pteroq
-  configure_nginx
   [ "$CONFIGURE_LETSENCRYPT" == true ] && letsencrypt
   true
 }
