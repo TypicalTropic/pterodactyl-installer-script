@@ -298,21 +298,21 @@ ptdl_dl() {
 
 # Create a databse with user
 create_database() {
-    echo "* Performing MySQL queries.."
+  echo "* Performing MySQL queries.."
 
-    echo "* Creating MySQL user.."
-    mysql -u root -e "CREATE USER '${MYSQL_USER}'@'127.0.0.1' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+  echo "* Creating MySQL user.."
+  mysql -u root -e "CREATE USER '${MYSQL_USER}'@'127.0.0.1' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
-    echo "* Creating database.."
-    mysql -u root -e "CREATE DATABASE ${MYSQL_DB};"
+  echo "* Creating database.."
+  mysql -u root -e "CREATE DATABASE ${MYSQL_DB};"
 
-    echo "* Granting privileges.."
-    mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'127.0.0.1' WITH GRANT OPTION;"
+  echo "* Granting privileges.."
+  mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'127.0.0.1' WITH GRANT OPTION;"
 
-    echo "* Flushing privileges.."
-    mysql -u root -e "FLUSH PRIVILEGES;"
+  echo "* Flushing privileges.."
+  mysql -u root -e "FLUSH PRIVILEGES;"
 
-    echo "* MySQL database created & configured!"
+  echo "* MySQL database created & configured!"
 }
 
 # Configure environment
@@ -539,8 +539,8 @@ firewall_firewalld() {
   echo "* Opening port 22 (SSH), 80 (HTTP) and 443 (HTTPS)"
 
   # Install
-  [ "$OS_VER_MAJOR" == "18" ] && apt install -y firewalld 
-  [ "$OS_VER_MAJOR" == "20" ] && apt install -y firewalld 
+  [ "$OS_VER_MAJOR" == "18" ] && apt install -y firewalld
+  [ "$OS_VER_MAJOR" == "20" ] && apt install -y firewalld
 
   # Enable
   systemctl --now enable firewalld # Enable and start
@@ -610,7 +610,6 @@ configure_nginx() {
 
   # enable pterodactyl
   ln -sf /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
-
 
   if [ "$ASSUME_SSL" == false ] && [ "$CONFIGURE_LETSENCRYPT" == false ]; then
     systemctl restart nginx
