@@ -13,7 +13,7 @@ fi
 # check for curl
 if ! [ -x "$(command -v curl)" ]; then
   echo "* curl is required in order for this script to work."
-  echo "* install using apt (Debian and derivatives) or yum/dnf (CentOS)"
+  echo "* install using apt (Debian and derivatives)"
   exit 1
 fi
 
@@ -290,7 +290,6 @@ ptdl_dl() {
   chmod -R 755 storage/* bootstrap/cache/
 
   cp .env.example .env
-  [ "$OS" == "centos" ] && export PATH=/usr/local/bin:$PATH
   COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
   php artisan key:generate --force
@@ -363,9 +362,6 @@ set_folder_permissions() {
   debian | ubuntu)
     chown -R www-data:www-data ./*
     ;;
-  centos)
-    chown -R nginx:nginx ./*
-    ;;
   esac
 }
 
@@ -390,9 +386,6 @@ install_pteroq() {
   debian | ubuntu)
     sed -i -e "s@<user>@www-data@g" /etc/systemd/system/pteroq.service
     ;;
-  centos)
-    sed -i -e "s@<user>@nginx@g" /etc/systemd/system/pteroq.service
-    ;;
   esac
 
   systemctl enable pteroq.service
@@ -407,33 +400,11 @@ apt_update() {
   apt update -q -y && apt upgrade -y
 }
 
-yum_update() {
-  yum -y update
-}
-
-dnf_update() {
-  dnf -y upgrade
-}
-
 enable_services_debian_based() {
   systemctl enable mariadb
   systemctl enable redis-server
   systemctl start mariadb
   systemctl start redis-server
-}
-
-enable_services_centos_based() {
-  systemctl enable mariadb
-  systemctl enable nginx
-  systemctl enable redis
-  systemctl start mariadb
-  systemctl start redis
-}
-
-selinux_allow() {
-  setsebool -P httpd_can_network_connect 1 || true # these commands can fail OK
-  setsebool -P httpd_execmem 1 || true
-  setsebool -P httpd_unified 1 || true
 }
 
 ubuntu20_dep() {
@@ -561,71 +532,7 @@ debian_dep() {
   echo "* Dependencies for Debian 11 installed!"
 }
 
-centos7_dep() {
-  echo "* Installing dependencies for CentOS 7.."
-
-  # SELinux tools
-  yum install -y policycoreutils policycoreutils-python selinux-policy selinux-policy-targeted libselinux-utils setroubleshoot-server setools setools-console mcstrans
-
-  # Add remi repo (php8.0)
-  yum install -y epel-release http://rpms.remirepo.net/enterprise/remi-release-7.rpm
-  yum install -y yum-utils
-  yum-config-manager -y --disable remi-php54
-  yum-config-manager -y --enable remi-php80
-  yum_update
-
-  # Install MariaDB
-  curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
-
-  # Install dependencies
-  yum -y install php php-common php-tokenizer php-curl php-fpm php-cli php-json php-mysqlnd php-mcrypt php-gd php-mbstring php-pdo php-zip php-bcmath php-dom php-opcache mariadb-server nginx curl tar zip unzip git redis
-
-  # Enable services
-  enable_services_centos_based
-
-  # SELinux (allow nginx and redis)
-  selinux_allow
-
-  echo "* Dependencies for CentOS installed!"
-}
-
-centos8_dep() {
-  echo "* Installing dependencies for CentOS 8.."
-
-  # SELinux tools
-  dnf install -y policycoreutils selinux-policy selinux-policy-targeted setroubleshoot-server setools setools-console mcstrans
-
-  # add remi repo (php8.0)
-  dnf install -y epel-release http://rpms.remirepo.net/enterprise/remi-release-8.rpm
-  dnf module enable -y php:remi-8.0
-  dnf_update
-
-  dnf install -y php php-common php-fpm php-cli php-json php-mysqlnd php-gd php-mbstring php-pdo php-zip php-bcmath php-dom php-opcache
-
-  # MariaDB (use from official repo)
-  dnf install -y mariadb mariadb-server
-
-  # Other dependencies
-  dnf install -y nginx curl tar zip unzip git redis
-
-  # Enable services
-  enable_services_centos_based
-
-  # SELinux (allow nginx and redis)
-  selinux_allow
-
-  echo "* Dependencies for CentOS installed!"
-}
-
 ##### OTHER OS SPECIFIC FUNCTIONS #####
-
-centos_php() {
-  curl -o /etc/php-fpm.d/www-pterodactyl.conf $GITHUB_BASE_URL/configs/www-pterodactyl.conf
-
-  systemctl enable php-fpm
-  systemctl start php-fpm
-}
-
 
 firewall_firewalld() {
   echo -e "\n* Enabling firewall_cmd (firewalld)"
@@ -882,6 +789,6 @@ goodbye() {
   print_brake 62
 }
 
-# run script
+# runs script
 main
 goodbye
