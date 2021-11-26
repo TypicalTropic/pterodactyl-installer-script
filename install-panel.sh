@@ -254,8 +254,14 @@ check_os_comp() {
     PHP_SOCKET="/run/php/php8.0-fpm.sock"
     [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
     [ "$OS_VER_MAJOR" == "20" ] && SUPPORTED=true
-    [ "$OS_VER_MAJOR" == "20.04" ] && SUPPORTED=true
+    [ "$OS_VER_MAJOR" == "2004" ] && SUPPORTED=true
     ;;
+  debian)
+    PHP_SOCKET="/run/php/php8.0-fpm.sock"
+    [ "$OS_VER_MAJOR" == "9" ] && SUPPORTED=true
+    [ "$OS_VER_MAJOR" == "10" ] && SUPPORTED=true
+    [ "$OS_VER_MAJOR" == "11" ] && SUPPORTED=true
+    ;;  
   *)
     SUPPORTED=false
     ;;
@@ -658,11 +664,6 @@ main() {
 
   print_brake 70
   echo "* Pterodactyl panel installation script @ $SCRIPT_RELEASE"
-  echo "*"
-  echo "* Copyright (C) 2018 - 2021, Vilhelm Prytz, <vilhelm@prytznet.se>"
-  echo "* https://github.com/vilhelmprytz/pterodactyl-installer"
-  echo "*"
-  echo "* This script is not associated with the official Pterodactyl Project."
   echo "*"
   echo "* Running $OS version $OS_VER."
   echo "* Latest pterodactyl/panel is $PTERODACTYL_VERSION"
