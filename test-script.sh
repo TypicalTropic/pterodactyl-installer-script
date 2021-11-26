@@ -16,5 +16,7 @@ detect_distro() {
   OS_VER_MAJOR=$(echo "$OS_VER")
 }
 
+detect_distro
+
 echo "$OS_VER_MAJOR"
 
