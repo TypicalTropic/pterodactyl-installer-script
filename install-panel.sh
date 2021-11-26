@@ -42,7 +42,7 @@ CONFIGURE_LETSENCRYPT=false
 
 # download URLs
 PANEL_DL_URL="https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz"
-GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script/"
+GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script"
 
 # firewall_cmd
 CONFIGURE_FIREWALL_CMD=false

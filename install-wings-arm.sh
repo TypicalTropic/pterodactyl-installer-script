@@ -26,7 +26,7 @@ fi
 
 # download URLs
 WINGS_ARM_DL_BASE_URL="https://github.com/pterodactyl/wings/releases/download/v1.5.1/wings_linux_arm64"
-GITHUB_BASE_URL="https://github.com/TypicalTropic/pterodactyl-installer-script"
+GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script/"
 
 COLOR_RED='\033[0;31m'
 COLOR_NC='\033[0m'
@@ -369,7 +369,7 @@ ask_letsencrypt() {
 
     print_warning "You cannot use Let's Encrypt with your hostname as an IP address! It must be a FQDN (e.g. node.example.org)."
 
-    echo -e -n "* Do you want to automatically configure HTTPS using Let's Encrypt? (y/N): "
+    echo -e -n "* Do you want to automatically configure HTTPS using Let's Encrypt? (If previously installed using panel option do not configure) (y/N): "
     read -r CONFIRM_SSL
 
     if [[ "$CONFIRM_SSL" =~ [Yy] ]]; then
