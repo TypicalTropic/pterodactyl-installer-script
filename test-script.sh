@@ -13,7 +13,7 @@ detect_distro() {
   fi
 
   OS=$(echo "$OS" | awk '{print tolower($0)}')
-  OS_VER_MAJOR=$(echo "$OS_VER" | cut -d. -f1)
+  OS_VER_MAJOR=$(echo "$OS_VER" | cut -d.)
 }
 
 echo "$OS_VER_MAJOR"
