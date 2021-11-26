@@ -2,32 +2,6 @@
 
 set -e
 
-#############################################################################
-#                                                                           #
-# Project 'pterodactyl-installer'                                           #
-#                                                                           #
-# Copyright (C) 2018 - 2021, Vilhelm Prytz, <vilhelm@prytznet.se>           #
-#                                                                           #
-#   This program is free software: you can redistribute it and/or modify    #
-#   it under the terms of the GNU General Public License as published by    #
-#   the Free Software Foundation, either version 3 of the License, or       #
-#   (at your option) any later version.                                     #
-#                                                                           #
-#   This program is distributed in the hope that it will be useful,         #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of          #
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           #
-#   GNU General Public License for more details.                            #
-#                                                                           #
-#   You should have received a copy of the GNU General Public License       #
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.  #
-#                                                                           #
-# https://github.com/vilhelmprytz/pterodactyl-installer/blob/master/LICENSE #
-#                                                                           #
-# This script is not associated with the official Pterodactyl Project.      #
-# https://github.com/vilhelmprytz/pterodactyl-installer                     #
-#                                                                           #
-#############################################################################
-
 CHECKIP_URL="https://checkip.pterodactyl-installer.se"
 DNS_SERVER="8.8.8.8"
 
@@ -40,7 +14,7 @@ fi
 # check for curl
 if ! [ -x "$(command -v curl)" ]; then
   echo "* curl is required in order for this script to work."
-  echo "* install using apt (Debian and derivatives) or yum/dnf (CentOS)"
+  echo "* install using apt (Debian and derivatives)"
   exit 1
 fi
 
@@ -69,7 +43,6 @@ fail() {
 }
 
 dep_install() {
-  [ "$os" == "centos" ] && yum install -q -y bind-utils
   [ "$os" == "debian" ] && apt-get install -y dnsutils -qq
   [ "$os" == "ubuntu" ] && apt-get install -y dnsutils -qq
   return 0
