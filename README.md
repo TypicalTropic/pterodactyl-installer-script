@@ -1,19 +1,23 @@
 # Pterodactyl-Script
 Installing Pterodactyl in just a few minutes! <br />
+Used to install Pterodactyl on Oracle Cloud VMS<br />
 Please note this script is meant to be used on fresh installations only. You must run it as root. <br />
-<br />
 
+Run <br />
+<br />
+`git clone https://github.com/TypicalTropic/pterodactyl-installer-script.git`<br /> 
+<br />
+And <br />
 <br /> 
 `bash install.sh` <br />
 <br />
+To install <br />
+
+
 # Supported Operating System
 
 
-| Operating System  | Version  | Supported            | Recommended        | Notes                                |
-| ----------------- | -------- | -------------------- | ------------------ | ------------------------------------ |
-| Ubuntu            | 20.04    | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| Debian            | 10       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| CentOS            | Stream 8 | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| Rocky Linux       | 8        | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| RHEL              | 8        | :heavy_check_mark:   | :red_circle:       |                                      |
-| Fedora            | 34       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
+| Operating System  | Version  | Supported            | Recommended        |
+| ----------------- | -------- | -------------------- | ------------------ | 
+| Ubuntu            | 20.04    | :heavy_check_mark:   | :heavy_check_mark: |
+| Ubuntu            | 18       | :heavy_check_mark:   | :heavy_check_mark: |                
