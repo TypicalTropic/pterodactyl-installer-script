@@ -643,6 +643,14 @@ perform_install() {
     ;;
   esac
 
+  install_composer
+  ptdl_dl
+  create_database
+  configure
+  set_folder_permissions
+  insert_cronjob
+  install_pteroq
+  configure_nginx
   [ "$CONFIGURE_LETSENCRYPT" == true ] && letsencrypt
   true
 }
