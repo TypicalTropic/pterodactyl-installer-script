@@ -5,7 +5,7 @@ Please note this script is meant to be used on fresh installations only. You mus
 
 Run <br />
 <br />
-git clone https://github.com/TypicalTropic/pterodactyl-installer-script.git<br /> 
+`git clone https://github.com/TypicalTropic/pterodactyl-installer-script.git`<br /> 
 <br />
 And <br />
 <br /> 
