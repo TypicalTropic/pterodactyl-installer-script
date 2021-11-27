@@ -1,11 +1,16 @@
 #!/bin/bash
 
-GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script/"
+WINGS_ARM_DL_BASE_URL="https://github.com/pterodactyl/wings/releases/download/v1.5.1/wings_linux_arm64"
 
-install_pteroq() {
-  echo "* Installing pteroq service.."
+ptdl_dl() {
+  echo "* Installing Pterodactyl Wings .. "
 
-  curl -o /etc/systemd/system/pteroq.service $GITHUB_BASE_URL/configs/pteroq.service
+  mkdir -p /etc/pterodactyl
+  curl -L -o /usr/local/bin/wings "$WINGS_ARM_DL_BASE_URL"
+
+  chmod u+x /usr/local/bin/wings
+
+  echo "* Done."
 }
 
-install_pteroq
+ptdl_dl
