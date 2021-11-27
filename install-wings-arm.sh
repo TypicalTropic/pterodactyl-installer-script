@@ -386,6 +386,7 @@ firewall_firewalld() {
 
     # Enable
     systemctl --now enable firewalld # Enable and start
+    systemctl disable ufw #Disables UFW 
 
     # Configure
     firewall-cmd --add-service=ssh --permanent -q                                           # Port 22
