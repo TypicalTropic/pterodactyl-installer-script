@@ -396,6 +396,7 @@ firewall_firewalld() {
 
     firewall-cmd --permanent --zone=trusted --change-interface=pterodactyl0 -q
     firewall-cmd --zone=trusted --add-masquerade --permanent
+    firewall-cmd --permanent --zone=trusted --remove-interface=pterodactyl0
     firewall-cmd --reload -q # Enable firewall
 
     echo "* Firewall-cmd installed"
