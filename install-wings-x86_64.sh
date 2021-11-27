@@ -26,7 +26,7 @@ fi
 
 # download URLs
 WINGS_DL_BASE_URL="https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_"
-GITHUB_BASE_URL="https://github.com/TypicalTropic/pterodactyl-installer-script"
+GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script/"
 
 COLOR_RED='\033[0;31m'
 COLOR_NC='\033[0m'
