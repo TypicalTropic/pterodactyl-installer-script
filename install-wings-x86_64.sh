@@ -141,15 +141,14 @@ hyperlink() {
 
 detect_distro() {
   if [ -f /etc/lsb-release ]; then
-    # For some versions of Ubuntu without lsb_release command
+    # For some versions of Debian/Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$(echo "$DISTRIB_ID" | awk '{print tolower($0)}')
     OS_VER=$DISTRIB_RELEASE
-
-  else
-    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-    OS=$(uname -s)
-    OS_VER=$(uname -r)
+  elif [ -f /etc/debian_version ]; then
+    # Older Debian/Ubuntu/etc.
+    OS="debian"
+    OS_VER=$(cat /etc/debian_version)
   fi
 
   OS=$(echo "$OS" | awk '{print tolower($0)}')
@@ -183,13 +182,12 @@ check_os_comp() {
     exit 1
     ;;
   esac
-}
+
   case "$OS" in
   ubuntu)
     [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
     [ "$OS_VER_MAJOR" == "20" ] && SUPPORTED=true
     ;;
-
   *)
     SUPPORTED=false
     ;;
@@ -206,7 +204,7 @@ check_os_comp() {
 
   # check virtualization
   echo -e "* Installing virt-what..."
-  if [ "$OS" == "ubuntu" ]; then
+  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
     # silence dpkg output
     export DEBIAN_FRONTEND=noninteractive
 
@@ -216,7 +214,6 @@ check_os_comp() {
 
     # unsilence
     unset DEBIAN_FRONTEND
-
   else
     print_error "Invalid OS."
     exit 1
@@ -232,7 +229,7 @@ check_os_comp() {
     if [[ ! "$CONFIRM_PROCEED" =~ [Yy] ]]; then
       print_error "Installation aborted!"
       exit 1
-      fi
+    fi
     ;;
   *)
     [ "$virt_serv" != "" ] && print_warning "Virtualization: $virt_serv detected."
@@ -243,7 +240,7 @@ check_os_comp() {
     print_error "Unsupported kernel detected."
     exit 1
   fi
-
+}
 ############################
 ## INSTALLATION FUNCTIONS ##
 ############################
@@ -386,6 +383,7 @@ firewall_firewalld() {
   
   # Enable
   systemctl --now enable firewalld  # Enable and start
+  systemctl disable ufw #Disables UFW 
 
   # Configure
   firewall-cmd --add-service=ssh --permanent -q                                           # Port 22
