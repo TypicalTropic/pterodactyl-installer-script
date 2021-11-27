@@ -188,8 +188,7 @@ check_os_comp() {
         # fallthrough
     aarch64)
         print_warning "Detected architecture arm64"
-        print_warning "You will need to use Docker images made specifically for arm64"
-        echo -e -n "* Are you sure you want to proceed? (y/N):"
+        echo -e -n "* Proceed? (y/N):"
         read -r choice
 
         if [[ ! "$choice" =~ [Yy] ]]; then
@@ -296,7 +295,7 @@ ptdl_dl() {
     echo "* Installing Pterodactyl Wings .. "
 
     mkdir -p /etc/pterodactyl
-    curl -L -o /usr/local/bin/wings "$WINGS_ARM_DL_BASE_URL$ARCH"
+    curl -L -o /usr/local/bin/wings "$WINGS_ARM_DL_BASE_URL"
 
     chmod u+x /usr/local/bin/wings
 
