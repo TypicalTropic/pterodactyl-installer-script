@@ -9,11 +9,7 @@ Please note this script is meant to be used on fresh installations only. You mus
 # Supported Operating System
 
 
-| Operating System  | Version  | Supported            | Recommended        | Notes                                |
-| ----------------- | -------- | -------------------- | ------------------ | ------------------------------------ |
-| Ubuntu            | 20.04    | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| Debian            | 10       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| CentOS            | Stream 8 | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| Rocky Linux       | 8        | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| RHEL              | 8        | :heavy_check_mark:   | :red_circle:       |                                      |
-| Fedora            | 34       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
+| Operating System  | Version  | Supported            | Recommended        |
+| ----------------- | -------- | -------------------- | ------------------ | 
+| Ubuntu            | 20.04    | :heavy_check_mark:   | :heavy_check_mark: |
+| Ubuntu            | 18       | :heavy_check_mark:   | :heavy_check_mark: |                
