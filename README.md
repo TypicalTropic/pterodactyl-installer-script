@@ -6,18 +6,13 @@ Please note this script is meant to be used on fresh installations only. You mus
 Run <br />
 <br />
 `git clone https://github.com/TypicalTropic/pterodactyl-installer-script.git`<br /> 
+<br /> 
+Then <br /> 
 <br />
+'cd pterodactyl-installer-script' <br /> 
+<br /> 
 And <br />
 <br /> 
 `bash install.sh` <br />
 <br />
 To install <br />
-
-
-# Supported Operating System
-
-
-| Operating System  | Version  | Supported            | Recommended        |
-| ----------------- | -------- | -------------------- | ------------------ | 
-| Ubuntu            | 20.04    | :heavy_check_mark:   | :heavy_check_mark: |
-| Ubuntu            | 18       | :heavy_check_mark:   | :heavy_check_mark: |                
