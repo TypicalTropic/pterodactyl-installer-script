@@ -9,7 +9,7 @@ Run <br />
 <br /> 
 Then <br /> 
 <br />
-'cd pterodactyl-installer-script' <br /> 
+`cd pterodactyl-installer-script` <br /> 
 <br /> 
 And <br />
 <br /> 
