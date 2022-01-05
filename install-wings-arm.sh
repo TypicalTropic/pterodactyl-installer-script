@@ -25,7 +25,7 @@ fi
 #################################
 
 # download URLs
-WINGS_ARM_DL_BASE_URL="https://github.com/pterodactyl/wings/releases/download/v1.5.1/wings_linux_arm64"
+WINGS_ARM_DL_BASE_URL="https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_arm64"
 GITHUB_BASE_URL="https://typicaltropic.github.io/pterodactyl-installer-script/"
 
 COLOR_RED='\033[0;31m'
