@@ -54,8 +54,8 @@ while [ "$done" == false ]; do
     "Install the panel"
     "Install Wings x86_64"
     "Install Wings ARM"
-    "Install both [0] and [1] on the same machine (wings script runs after panel)"
-    "Install Both [0] and [2] on the same machine (wings script runs after panel)"
+    "Install both the Panel and Wings x86_64 on the same machine "
+    "Install Both the Panel and Wings ARM on the same machine "
 
   )
 
