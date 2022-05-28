@@ -1,7 +1,9 @@
 # Pterodactyl-Script
-Installing Pterodactyl in just a few minutes! <br />
-Used to install Pterodactyl on Oracle Cloud VMS<br />
-Please note this script is meant to be used on fresh installations only. You must run it as root. <br />
+Original Repository - https://github.com/vilhelmprytz/pterodactyl-installer
+Script used to install Pterodactl Panel to manage the servers used on CatCraft Minecraft Server.
+
+Install Pterodactyl on Oracle Cloud VMS<br />
+Please note this script is meant to be used on fresh installations only. You must run it as root/sudo. <br />
 
 Run <br />
 <br />
