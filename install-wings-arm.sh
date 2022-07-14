@@ -418,6 +418,8 @@ letsencrypt() {
 
     # Obtain certificate
     certbot certonly --no-eff-email --email "$EMAIL" --standalone -d "$FQDN" || FAILED=true
+    
+    crontab -l | { cat; echo "0 23 * * * certbot renew --quiet --deploy-hook "systemctl restart nginx""; } | crontab -
 
     systemctl start nginx || true
 
