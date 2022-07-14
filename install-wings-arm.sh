@@ -409,7 +409,7 @@ letsencrypt() {
     # Install certbot
     case "$OS" in
     debian | ubuntu)
-        apt-get -y install certbot python3-certbot-nginx
+        apt-get -y install certbot
         ;;
     esac
 
